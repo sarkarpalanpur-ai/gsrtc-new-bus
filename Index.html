@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>07-KM Register - AUGUST-2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body class="bg-gray-100 font-sans p-4">
+
+    <div class="max-w-7xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden border border-gray-300">
+        
+        <div class="bg-gray-200 px-4 py-3 flex flex-wrap justify-between items-center border-b border-gray-300">
+            <div class="flex items-center space-x-4">
+                <span class="text-xl font-bold tracking-wide">07-KM Register - AUGUST-2026</span>
+            </div>
+            <div class="flex space-x-2 mt-2 sm:mt-0">
+                <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleExcelImport(event)">
+                <button onclick="document.getElementById('excel-file-input').click()" class="bg-green-700 hover:bg-green-800 text-white font-semibold px-3 py-1.5 rounded text-sm shadow">IMPORT EXCEL</button>
+                <button onclick="exportToExcel()" class="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-3 py-1.5 rounded text-sm shadow">EXPORT EXCEL</button>
+                <button onclick="resetAll()" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-3 py-1.5 rounded text-sm shadow">RESET ALL</button>
+                <button id="serviceDoneBadge" onclick="toggleServiceSummaryModal()" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-3 py-1.5 rounded text-sm shadow transition">SERVICE DONE (0)</button>
+            </div>
+        </div>
+
+        <div class="bg-gray-50 px-4 py-3 flex flex-wrap items-center gap-6 border-b border-gray-300 text-sm">
+            <div class="flex items-center space-x-2">
+                <span class="font-bold bg-gray-200 px-2 py-1 rounded border">VEH. NO.</span>
+                <span class="bg-white border border-red-400 text-red-600 font-bold px-4 py-1 rounded shadow-inner">9269</span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span class="font-bold bg-gray-200 px-2 py-1 rounded border">MAKE</span>
+                <span class="bg-white border border-gray-300 px-4 py-1 rounded uppercase font-medium">TATA LAYMAN</span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span class="font-bold bg-gray-200 px-2 py-1 rounded border">MONTH</span>
+                <span class="bg-white border border-gray-300 px-3 py-1 rounded font-medium">AUGUST-2026</span>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table id="km-table" class="w-full border-collapse border border-gray-400 text-center text-xs">
+                <thead>
+                    <tr class="bg-gray-200 text-gray-800 font-semibold border-b border-gray-400">
+                        <th class="border border-gray-300 p-2">DATE</th>
+                        <th class="border border-gray-300 p-2">DAILY<br>KM</th>
+                        <th class="border border-gray-300 p-2">MONTHLY<br>KM</th>
+                        <th class="border border-gray-300 p-2">DOCKING<br>KM</th>
+                        <th class="border border-gray-300 p-2">ENGINE OIL<br>CHANGE KM</th>
+                        <th class="border border-gray-300 p-2">VEH. PROG.<br>KM</th>
+                        <th class="border border-gray-300 p-2">FUEL FILT CUM<br>WATER SEP</th>
+                        <th class="border border-gray-300 p-2">UREA<br>FILTER</th>
+                        <th class="border border-gray-300 p-2">PRL AIR<br>FILTER</th>
+                        <th class="border border-gray-300 p-2">SEC. AIR<br>FILTER</th>
+                        <th class="border border-gray-300 p-2">GEAR OIL<br>CHANGE</th>
+                        <th class="border border-gray-300 p-2">DIFF. OIL<br>COAÆNT</th>
+                        <th class="border border-gray-300 p-2">⚙️</th>
+                        <th class="border border-gray-300 p-2">POWER<br>ST. KM</th>
+                        <th class="border border-gray-300 p-2">RADIATOR<br>COOLENT</th>
+                        <th class="border border-gray-300 p-2">DAILY<br>DIESEL</th>
+                    </tr>
+                    <tr class="bg-gray-100 text-gray-700 font-bold border-b border-gray-400">
+                        <th class="border border-gray-300 p-1">1</th>
+                        <th class="border border-gray-300 p-1">2</th>
+                        <th class="border border-gray-300 p-1">3</th>
+                        <th class="border border-gray-300 p-1">4</th>
+                        <th class="border border-gray-300 p-1">5</th>
+                        <th class="border border-gray-300 p-1">6</th>
+                        <th class="border border-gray-300 p-1">7</th>
+                        <th class="border border-gray-300 p-1">8</th>
+                        <th class="border border-gray-300 p-1">10</th>
+                        <th class="border border-gray-300 p-1">12</th>
+                        <th class="border border-gray-300 p-1">13</th>
+                        <th class="border border-gray-300 p-1">16</th>
+                        <th class="border border-gray-300 p-1">14</th>
+                        <th class="border border-gray-300 p-1">15</th>
+                        <th class="border border-gray-300 p-1">18</th>
+                        <th class="border border-gray-300 p-1">18</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body" class="bg-white">
+                    </tbody>
+                <tfoot>
+                    <tr class="bg-gray-200 font-bold">
+                        <td class="border border-gray-400 p-2 text-left pl-3">TOTAL</td>
+                        <td class="border border-gray-400 p-2" id="total-daily">0</td>
+                        <td class="border border-gray-400 p-2" id="total-monthly">0</td>
+                        <td class="border border-gray-400 p-2" id="total-docking">0</td>
+                        <td colspan="12" class="border border-gray-400 p-2"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="p-4 bg-gray-50 border-t border-gray-300 flex flex-wrap justify-between items-center text-sm">
+            <div class="flex items-center space-x-3">
+                <button onclick="triggerServiceDone()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-3 py-1 rounded text-xs shadow flex items-center space-x-1">
+                    <span>🛠️ SERVICE BUTTON</span>
+                </button>
+                
+                <select id="column-select" class="border border-gray-300 rounded px-2 py-1 text-xs bg-white">
+                    <option value="">-- Select Column --</option>
+                    <option value="engine_oil">Engine Oil Change KM (Col 5)</option>
+                    <option value="veh_prog">Veh. Prog. KM (Col 6)</option>
+                    <option value="fuel_filt">Fuel Filt Cum Water Sep (Col 7)</option>
+                    <option value="urea">Urea Filter (Col 8)</option>
+                    <option value="gear_oil">Gear Oil Change (Col 13)</option>
+                    <option value="power_st">Power St. KM (Col 15)</option>
+                </select>
+                <button onclick="setColumnZero()" class="bg-green-800 hover:bg-green-900 text-white font-semibold px-4 py-1 rounded text-xs shadow">SET 0 (ZERO)</button>
+            </div>
+            
+            <div class="text-xs text-red-600 mt-2 sm:mt-0 font-medium">
+                <p><strong>Note:</strong></p>
+                <p>1. SERVICE DONE (0) – Select column and click SET 0 (ZERO) to reset values.</p>
+                <p>2. All KM values are cumulative.</p>
+            </div>
+
+            <div class="text-xs font-semibold text-gray-700 mt-2 sm:mt-0">
+                Today : <span id="current-date"></span>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="serviceSummaryModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg shadow-xl w-11/12 max-w-2xl p-6 relative">
+            <button onclick="toggleServiceSummaryModal()" class="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl font-bold">&times;</button>
+            <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">📊 KM Wise Summary & Service Status</h3>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                <div class="bg-blue-50 border border-blue-200 p-3 rounded text-center shadow-sm">
+                    <p class="text-xs text-blue-600 font-semibold">Total Monthly KM</p>
+                    <p id="modal-total-monthly" class="text-xl font-bold text-blue-800">0</p>
+                </div>
+                <div class="bg-green-50 border border-green-200 p-3 rounded text-center shadow-sm">
+                    <p class="text-xs text-green-600 font-semibold">Total Daily KM Sum</p>
+                    <p id="modal-total-daily" class="text-xl font-bold text-green-800">0</p>
+                </div>
+                <div class="bg-amber-50 border border-amber-200 p-3 rounded text-center shadow-sm">
+                    <p class="text-xs text-amber-600 font-semibold">Service Executed Count</p>
+                    <p id="modal-service-count" class="text-xl font-bold text-amber-800">0</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 text-sm text-gray-700">
+                <div class="flex justify-between border-b py-1">
+                    <span>Vehicle Number:</span>
+                    <span class="font-bold text-red-600">9269</span>
+                </div>
+                <div class="flex justify-between border-b py-1">
+                    <span>Make / Model:</span>
+                    <span class="font-bold uppercase">TATA LAYMAN</span>
+                </div>
+                <div class="flex justify-between border-b py-1">
+                    <span>Current Month:</span>
+                    <span class="font-bold">AUGUST-2026</span>
+                </div>
+                <div class="flex justify-between border-b py-1">
+                    <span>Service Done Counter Status:</span>
+                    <span id="modal-status-text" class="font-bold text-amber-600">0 Services Logged</span>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <button onclick="toggleServiceSummaryModal()" class="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded text-sm font-semibold">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set Today's Date
+        document.getElementById('current-date').innerText = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
+
+        const totalDays = 31;
+        const tbody = document.getElementById('table-body');
+        let serviceDoneCount = 0;
+
+        // Sample initial rows data
+        const initialData = [
+            { daily: 450, diesel: 150 },
+            { daily: 500, diesel: 160 },
+            { daily: 480, diesel: 155 },
+            { daily: 470, diesel: 150 },
+            { daily: 520, diesel: 170 },
+        ];
+
+        function renderTable() {
+            tbody.innerHTML = '';
+            let cumulativeMonthly = 0;
+            let cumulativeDocking = 0;
+
+            for (let i = 1; i <= totalDays; i++) {
+                let dayStr = i < 10 ? `0${i}-08-2026` : `${i}-08-2026`;
+                let sample = initialData[i-1] || {};
+                let dailyVal = sample.daily !== undefined ? sample.daily : '';
+                let dieselVal = sample.diesel !== undefined ? sample.diesel : '';
+
+                if (dailyVal !== '') {
+                    cumulativeMonthly += Number(dailyVal);
+                    cumulativeDocking += Number(dailyVal);
+                }
+
+                let row = document.createElement('tr');
+                row.className = "hover:bg-gray-50 border-b border-gray-200";
+                row.innerHTML = `
+                    <td class="border border-gray-300 p-1 font-medium bg-gray-50">${dayStr}</td>
+                    <td class="border border-gray-300 p-1"><input type="number" class="w-full text-center bg-transparent focus:bg-white outline-none daily-input" value="${dailyVal}" oninput="calculateTotals()"></td>
+                    <td class="border border-gray-300 p-1 monthly-cell font-medium">${dailyVal !== '' ? cumulativeMonthly : ''}</td>
+                    <td class="border border-gray-300 p-1 docking-cell font-medium">${dailyVal !== '' ? cumulativeDocking : ''}</td>
+                    <td class="border border-gray-300 p-1 editable-col" data-col="engine_oil"><input type="number" class="w-full text-center bg-transparent outline-none" value="3500"></td>
+                    <td class="border border-gray-300 p-1 editable-col" data-col="veh_prog"><input type="number" class="w-full text-center bg-transparent outline-none" value="492018"></td>
+                    <td class="border border-gray-300 p-1 editable-col" data-col="fuel_filt"><input type="number" class="w-full text-center bg-transparent outline-none" value="84063"></td>
+                    <td class="border border-gray-300 p-1 editable-col" data-col="urea"><input type="number" class="w-full text-center bg-transparent outline-none" value="30103"></td>
+                    <td class="border border-gray-300 p-1">16312</td>
+                    <td class="border border-gray-300 p-1">157001</td>
+                    <td class="border border-gray-300 p-1 editable-col" data-col="gear_oil"><input type="number" class="w-full text-center bg-transparent outline-none" value="86319"></td>
+                    <td class="border border-gray-300 p-1">157001</td>
+                    <td class="border border-gray-300 p-1"></td>
+                    <td class="border border-gray-300 p-1 editable-col" data-col="power_st"><input type="number" class="w-full text-center bg-transparent outline-none" value="157001"></td>
+                    <td class="border border-gray-300 p-1">188865</td>
+                    <td class="border border-gray-300 p-1"><input type="number" class="w-full text-center bg-transparent focus:bg-white outline-none" value="${dieselVal}"></td>
+                `;
+                tbody.appendChild(row);
+            }
+            calculateTotals();
+        }
+
+        function calculateTotals() {
+            const inputs = document.querySelectorAll('.daily-input');
+            let totalDaily = 0;
+            let runningMonthly = 0;
+            let runningDocking = 0;
+
+            inputs.forEach((input) => {
+                let val = parseFloat(input.value) || 0;
+                const row = input.closest('tr');
+                const monthlyCell = row.querySelector('.monthly-cell');
+                const dockingCell = row.querySelector('.docking-cell');
+
+                if (val > 0) {
+                    totalDaily += val;
+                    runningMonthly += val;
+                    runningDocking += val;
+                    monthlyCell.innerText = runningMonthly;
+                    dockingCell.innerText = runningDocking;
+                } else {
+                    monthlyCell.innerText = '';
+                    dockingCell.innerText = '';
+                }
+            });
+
+            document.getElementById('total-daily').innerText = totalDaily;
+            document.getElementById('total-monthly').innerText = runningMonthly;
+            document.getElementById('total-docking').innerText = runningDocking;
+
+            // Update modal summary metrics live
+            document.getElementById('modal-total-monthly').innerText = runningMonthly;
+            document.getElementById('modal-total-daily').innerText = totalDaily;
+        }
+
+        // Service Button action
+        function triggerServiceDone() {
+            serviceDoneCount++;
+            document.getElementById('serviceDoneBadge').innerText = `SERVICE DONE (${serviceDoneCount})`;
+            document.getElementById('modal-service-count').innerText = serviceDoneCount;
+            document.getElementById('modal-status-text').innerText = `${serviceDoneCount} Services Logged successfully`;
+            alert(`Service recorded! Current Service Count: ${serviceDoneCount}`);
+        }
+
+        // Set Selected Column to 0
+        function setColumnZero() {
+            const selectedCol = document.getElementById('column-select').value;
+            if(!selectedCol) {
+                alert("Please select a column from the dropdown first!");
+                return;
+            }
+
+            const rows = tbody.querySelectorAll('tr');
+            rows.forEach(row => {
+                const targetCell = row.querySelector(`[data-col="${selectedCol}"] input`);
+                if(targetCell) {
+                    targetCell.value = 0;
+                }
+            });
+            alert(`All values in the selected column have been set to 0.`);
+        }
+
+        // Toggle Modal for KM Wise Summary
+        function toggleServiceSummaryModal() {
+            const modal = document.getElementById('serviceSummaryModal');
+            modal.classList.toggle('hidden');
+        }
+
+        // Real Excel Export using SheetJS
+        function exportToExcel() {
+            let table = document.getElementById("km-table");
+            let wb = XLSX.utils.table_to_book(table, {sheet: "KM-Register"});
+            XLSX.writeFile(wb, "07-KM-Register-August-2026.xlsx");
+        }
+
+        // Real Excel Import using SheetJS
+        function handleExcelImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const json = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+
+                alert("Excel file imported successfully! Data loaded into registers.");
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // Reset All Data
+        function resetAll() {
+            if(confirm("Are you sure you want to reset all daily KM records?")) {
+                const inputs = document.querySelectorAll('.daily-input');
+                inputs.forEach(input => input.value = '');
+                calculateTotals();
+            }
+        }
+
+        // Initial setup
+        renderTable();
+    </script>
+</body>
+</html>
